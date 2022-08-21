@@ -1,4 +1,3 @@
-from genericpath import exists
 import os
 from azure.storage.blob import BlobServiceClient
 import configparser
@@ -11,22 +10,15 @@ import shutil
 
 
 #Make local path for blob files.
-timestamp_str = str(datetime.now().timestamp()).split(".")[0]
-local_path = "./data" 
 schema_path ="./json_schemas/iss_now_schema.json"
-export_file_path ='./.temp'
-export_file_name = f'iss_now_{timestamp_str}.csv'
+local_path ='./.temp/'
+timestamp_str = str(datetime.now().timestamp()).split(".")[0]
+local_file_name = f'iss_now_{timestamp_str}.csv'
 
 try:
     os.mkdir(local_path)
 except FileExistsError as e:
     print('Non-critical exception: ', e)
-
-try:
-    os.mkdir(export_file_path)
-except FileExistsError as e:
-    print('Non-critical exception: ', e)
-    #shutil.rmtree(os.path.dirname(export_file_path))
 
 
 #Get responce from API. 
@@ -41,34 +33,38 @@ with open(schema_path, 'r') as fh:
 validate(instance = responce_json, schema = schema )
 
 #flatten the reponce.
-result = [
+result = [    
     responce_json["iss_position"]["latitude"],
     responce_json["iss_position"]["longitude"],
     responce_json["timestamp"]
 ]
 
 #create csv file.
-with open(export_file_path + "/" + export_file_name,'w') as fh:
-    csvw = csv.writer(fh, delimiter = '|')
-    csvw.writerow(result)
+keys = [
+    'latitude',
+    'longitude',
+    'timestamp'
+    ]
 
-#load credentials for azure blob.
+with open(local_path + local_file_name,'w') as fh:
+    csvw = csv.writer(fh, delimiter = ',')
+    csvw.writerows([keys, result])
+
+#get credentials for azure blob.
 parser = configparser.ConfigParser()
 parser.read('pipeline.conf')
 connection_string = parser.get('blob_credentials','connection_string')
-container_name = parser.get('blob_credentials','connection_string')
+container_name = parser.get('blob_credentials','container_name')
 
-#Creating the BlobServiceClient with account url and credential.
+#create instance of BlobServiceClient using connection string.
 blob_service_client = BlobServiceClient.from_connection_string(connection_string)
-blob_client = blob_service_client.get_blob_client(container = container_name, blob = export_file_name)
-
-print("\nUploading to Azure Storage as blob:\n\t" + export_file_name)
+blob_client = blob_service_client.get_blob_client(container = container_name, blob = local_file_name)
 
 # Upload the created file
-with open(export_file_path + "/" + export_file_name, "rb") as data:
+with open(local_path + local_file_name, "rb") as data:
+    print("\nUploading to Azure Storage as blob:\n\t" + local_file_name)
     blob_client.upload_blob(data)
 
-
 #clean up temp files onces loaded to blob.
-#shutil.rmtree(os.path.dirname(export_file_path))
+shutil.rmtree(os.path.dirname(local_path))
 
