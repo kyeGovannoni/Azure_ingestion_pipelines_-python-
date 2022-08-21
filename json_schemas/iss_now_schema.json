@@ -1,0 +1,22 @@
+{
+	"$schema": "https://json-schema.org/draft/2019-09/schema",
+      "type":"object",
+        "properties":{
+        	"message":{"type":"string"},
+            "timestamp":{"type":"number"},
+             "iss_position":{
+              		"type":"object",
+                      "properties":{
+                      		"latitude":{"type":"string"},
+                            "longitude":{"type":"string"}
+                     	 	},
+                           "additionalProperties": false
+
+             }
+             
+
+        }
+
+      ,"additionalProperties": false
+
+}
