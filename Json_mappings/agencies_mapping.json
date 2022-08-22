@@ -1,0 +1,14 @@
+
+{
+    "agency_id" : "[\"agency_id\"]",
+    "bounding_box_upper_lat" : "[\"bounding_box\"][0][\"lat\"]",
+    "bounding_box_upper_lng" : "[\"bounding_box\"][0][\"lng\"]",
+    "bounding_box_lower_lat" : "[\"bounding_box\"][1][\"lat\"]",
+    "bounding_box_lower_lng" : "[\"bounding_box\"][1][\"lng\"]",
+    "language" : "[\"language\"]",
+    "long_name" : "[\"long_name\"]",
+    "name" : "[\"name\"]",
+    "phone" : "[\"phone\"]",
+    "pos_lng" : "[\"position\"][\"lng\"]",
+    "timezone" : "[\"timezone\"]"
+}

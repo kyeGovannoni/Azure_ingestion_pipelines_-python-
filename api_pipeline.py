@@ -63,7 +63,9 @@ blob_client = blob_service_client.get_blob_client(container = container_name, bl
 # Upload the created file
 with open(local_path + local_file_name, "rb") as data:
     print("\nUploading to Azure Storage as blob:\n\t" + local_file_name)
-    blob_client.upload_blob(data)
+    blob_client.upload_blob(data = data, metadata = {"timestamp":"number",
+                                                    "latitude":"string", 
+                                                    "longitude":"string"})
 
 #clean up temp files onces loaded to blob.
 shutil.rmtree(os.path.dirname(local_path))
