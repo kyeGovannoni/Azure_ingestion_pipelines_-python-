@@ -15,17 +15,18 @@ local_path ='./.temp/'
 timestamp_str = str(datetime.now().timestamp()).split(".")[0]
 local_file_name = f'iss_now_{timestamp_str}.csv'
 
+#Try to create temp folder, raise soft exeption if already exists.
 try:
     os.mkdir(local_path)
 except FileExistsError as e:
     print('Non-critical exception: ', e)
 
 
-#Get responce from API. 
+#Get request to the API. 
 responce = requests.get("http://api.open-notify.org/iss-now.json")
 responce_json = json.loads(responce.content)
 
-#Get JSON schema and validate responce.
+#load JSON schema and validate the API's responce.
 with open(schema_path, 'r') as fh:
     schema = fh.read()
     schema = json.loads(schema)
@@ -66,6 +67,7 @@ with open(local_path + local_file_name, "rb") as data:
     blob_client.upload_blob(data = data, metadata = {"timestamp":"number",
                                                     "latitude":"string", 
                                                     "longitude":"string"})
+print('\n File sucessfully uploaded.')
 
 #clean up temp files onces loaded to blob.
 shutil.rmtree(os.path.dirname(local_path))
