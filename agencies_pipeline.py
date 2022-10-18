@@ -2,6 +2,7 @@ import requests
 import json 
 import configparser
 from lib.data_field_mapping import map_data_json
+from azure.storage.blob import BlobServiceClient
 import csv
 import os
 
@@ -40,7 +41,7 @@ meta_data['generated_on'] = responce_json['generated_on']
 with open(mapping_path,'r') as fh:
     data_mapping = json.loads(fh.read())
 
-header, data = map_data_json(data = responce_json['data'], data_map= data_mapping, additional_attributes = {'callback':'call'})
+header, data = map_data_json(data = responce_json['data'], data_map = data_mapping, additional_attributes = {'callback':'call'})
 
 with open(export_path + export_file,'w') as fh:
     csvw = csv.writer(fh, delimiter=',')
@@ -48,5 +49,14 @@ with open(export_path + export_file,'w') as fh:
     csvw.writerows(data)
 
 
+#create instance of BlobServiceClient using connection string
+connection_string = parser.get('blob_credentials','connection_string')
+container_name = parser.get('blob_credentials','container_name')
 
-#send data up to azure blob storage.
+blob_service_client = BlobServiceClient.from_connection_string(connection_string)
+blob_client = blob_service_client.get_blob_client(container = container_name, blob = export_file)
+
+# Upload the created file
+with open(export_path + export_file, "rb") as data:
+    print("\nUploading to Azure Storage as blob:\n\t" + export_file)
+    blob_client.upload_blob(data = data, metadata = meta_data)
