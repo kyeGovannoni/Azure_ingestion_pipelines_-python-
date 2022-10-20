@@ -1,6 +1,12 @@
 # pipelines
 
-There are two pipline files iss_piplines.py and agencies_pipline.py. 
+The purpose of this project is to test out some of the concepts discussed in the book 'data pipelines pocket reference'. Specifically creating a data pipeline in python that ingests data from an external api and outputs a flat file.
+
+To make the project more interesting I decided that the output file should be stored in and Azure blob storage container. Further concepts/additions.
+
+iss_pipeline impliments a JSON schema file to validate the API data before processing and outputing it.
+
+agencies_pipeline has a data mapping function for defining data elements and de-nesting json objects. 
 
 The json validation schema file can be found at ./json_schemas/iss_now_schema.json 
 
